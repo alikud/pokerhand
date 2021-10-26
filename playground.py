@@ -4,6 +4,8 @@
 
 import itertools
 import random
+import collections
+
 
 def quicksort(nums):
    if len(nums) <= 1:
@@ -38,23 +40,18 @@ def card_ranks(hand):
     отсортированный от большего к меньшему"""
     sorted_hand = []
     
-
+    rangs = {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
     for i in hand:
-        if i[0] == 'J':
-            sorted_hand.append(11)
-        if i[0] == 'T':
-            sorted_hand.append(10)
-        if i[0] == 'Q':
-            sorted_hand.append(12)
-        if i[0] == 'K':
-            sorted_hand.append(13)
-        if i[0] == 'A':
-            sorted_hand.append(14)
         if i[0].isdigit():
             sorted_hand.append(int(i[0]))
+        for j in rangs.keys():
+            if i[0] == j:
+                sorted_hand.append(rangs.get(j))
+                
+                
     
-    h = quicksort(sorted_hand)
-    return h
+    result = quicksort(sorted_hand)
+    return result
 
 def flush(hand:list) -> bool:
     #print(hand)
@@ -74,14 +71,43 @@ def flush(hand:list) -> bool:
         return True
     return False
 
+def straight(ranks):
+    """Возвращает True, если отсортированные ранги формируют последовательность 5ти,
+    где у 5ти карт ранги идут по порядку (стрит)"""
+    count = 0
+
+    for i in range(len(ranks)-1):
+        if ranks[i] + 1 == ranks[i+1]:
+            count+=1
+
+    #print(count)
+    if count == 5:
+        return True
+    return False
+
+def kind(n, ranks):
+    """Возвращает первый ранг, который n раз встречается в данной руке.
+    Возвращает None, если ничего не найдено"""
+    n_table = collections.Counter(ranks)
+    res = n_table.get(n)
+    print(n_table)
+    for key, value in n_table.items():
+        if value == n:
+            return key
+    return None
+
 if __name__ == '__main__':
     hand_1 = "6C 7C 8C 9C TC 5C 7B".split()
     hand_2 = 'JD TD TS 7D 8D TB 3D'.split()
-    hand_3 = "6C 7C 8C 9C TC 5C ?C".split()
-    hand_4 = "TD TC 5H 5C 7C ?R ?B".split()
+    hand_3 = "6C 7C 8C 9C TC 5C AC".split()
+    hand_4 = "TD TC 5H 5C 7C kR AB".split()
+    hand_5 = "AD AC AH 5C 7C kR AB".split()
     #print(*hand)
     #print(flush(hand_2))
-    s = card_ranks(hand_2)
+    s = card_ranks(hand_5)
     print(s)
+
+    straight(s)
+    print(kind(4, s))
 
     
